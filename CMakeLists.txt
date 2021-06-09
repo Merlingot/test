@@ -14,7 +14,7 @@ message("Python3_FOUND:${Python3_FOUND}")
 message("Python3_NumPy_FOUND:${Python3_NumPy_FOUND}")
 include_directories(${Python3_INCLUDE_DIRS})
 include_directories(${Python3_NumPy_INCLUDE_DIRS})
-link_directories(${Pyth./on3_LIBRARY_DIRS})
+link_directories(${Python3_LIBRARY_DIRS})
 
 add_executable(test_cmake main.cpp)
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
