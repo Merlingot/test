@@ -17,7 +17,7 @@ include_directories(${Python3_NumPy_INCLUDE_DIRS})
 link_directories(${Python3_LIBRARY_DIRS})
 
 add_executable(${PROJECT_NAME} main.cpp)
-#add_executable(main main.cpp)
+
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 target_link_libraries( ${PROJECT_NAME} ${Python3_LIBRARIES} Python3::NumPy)
 

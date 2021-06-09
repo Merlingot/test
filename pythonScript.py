@@ -9,7 +9,7 @@ def foo_bar(img=None):
         # Faire quelque chose avec l'image ici ...
         
         # Je retourne un array à la partie c++
-        direction = np.array([1,2,3], dtype=np.uint8) 
+        direction = np.array([[1],[2],[3]], dtype=np.double ) 
         
         return direction
     else:
