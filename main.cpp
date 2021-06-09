@@ -10,7 +10,10 @@ Additionally, you need to link your "python3#.lib" library, e.g. `C:\Program Fil
 #include "Python.h"
 #include "numpy/arrayobject.h"
 #include <iostream>
+#include <ostream>
 #include "opencv2/opencv.hpp"
+
+using namespace std;
 
 // for the references to all the functions
 PyObject *m_PyDict, *m_PyFooBar;
@@ -21,16 +24,16 @@ PyObject* m_PyModule;
 int main() {
   // int argc, char** argv
   // initialize Python embedding
+  
   Py_Initialize(); 
   
   // set the command line arguments (can be crucial for some python-packages, like tensorflow)
-  // PySys_SetArgv(NULL);
-  //argc, (wchar_t**)argv
+  //PySys_SetArgv(argc, (wchar_t**)argv);
   
   // add the current folder to the Python's PATH
   PyObject *sys_path = PySys_GetObject("path");
-  PyList_Append(sys_path, PyUnicode_FromString("."));  
-  
+  PyList_Append(sys_path, PyUnicode_FromString("."));
+    
   // this macro is defined by NumPy and must be included
   import_array1(-1);
   
@@ -39,6 +42,7 @@ int main() {
   
   if (m_PyModule != NULL)
   {
+    cout << "File pythonScript loaded ok" << endl;
     // get dictionary of available items in the module
     m_PyDict = PyModule_GetDict(m_PyModule);
 
@@ -48,6 +52,7 @@ int main() {
     // execute the function    
     if (m_PyFooBar != NULL)
     {
+      cout << "Function foo_bar found ok" << endl;
       // take a cv::Mat object from somewhere (we'll just create one)
       cv::Mat img = cv::Mat::zeros(480, 640, CV_8U);
       
@@ -74,10 +79,13 @@ int main() {
       // see detailed explanation here: https://docs.python.org/2.0/ext/buildValue.html 
       
       // execute the function
-      PyObject* result = PyEval_CallObject(m_PyFooBar, args);
+      PyObject* result = PyObject_CallObject(m_PyFooBar, args);
+
+      if (result == NULL)
+        return NULL; //pass error back if NULL pointer
       
       // process the result
-      // ...
+      // ICI FAIRE QUELQUE CHOSE AVEC result SI VOULU
       
       // decrement the object references
       Py_XDECREF(mat);

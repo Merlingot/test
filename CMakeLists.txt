@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(test_cmake VERSION 0.1.0)
+project(main VERSION 0.1.0)
 
 include(CTest)
 enable_testing()
@@ -16,7 +16,8 @@ include_directories(${Python3_INCLUDE_DIRS})
 include_directories(${Python3_NumPy_INCLUDE_DIRS})
 link_directories(${Python3_LIBRARY_DIRS})
 
-add_executable(test_cmake main.cpp)
+add_executable(${PROJECT_NAME} main.cpp)
+#add_executable(main main.cpp)
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 target_link_libraries( ${PROJECT_NAME} ${Python3_LIBRARIES} Python3::NumPy)
 
