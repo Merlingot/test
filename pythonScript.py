@@ -9,9 +9,9 @@ def foo_bar(img=None):
         # Faire quelque chose avec l'image ici ...
         
         # Je retourne un array à la partie c++
-        direction = np.array([[1],[2],[3]], dtype=np.double ) 
+        imageSize = np.array([[img.shape[0]],[img.shape[1]]], dtype=np.double ) 
         
-        return direction
+        return imageSize
     else:
         # Pas d'image reçue
         return None

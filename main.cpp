@@ -22,14 +22,24 @@ PyObject *m_PyDict, *m_PyFooBar;
 PyObject* m_PyModule;
 
 int main(int argc, char** argv) {
-  // 
+  
+  // Read image
+  if ( argc != 2 )
+  {
+      printf("usage: DisplayImage.out <Image_Path>\n");
+      return -1;
+  }
+  cv::Mat img;
+  img = cv::imread( argv[1], 1 );
+  if ( !img.data )
+  {
+      printf("No image data \n");
+      return -1;
+  }
+
   // initialize Python embedding
-  
   Py_Initialize(); 
-  
-  // set the command line arguments (can be crucial for some python-packages, like tensorflow)
-  // PySys_SetArgv(argc, (wchar_t**)argv);
-  
+
   // add the current folder to the Python's PATH
   PyObject *sys_path = PySys_GetObject("path");
   PyList_Append(sys_path, PyUnicode_FromString("."));
@@ -42,7 +52,7 @@ int main(int argc, char** argv) {
   
   if (m_PyModule != NULL)
   {
-    cout << "File pythonScript loaded ok" << endl;
+    //cout << "Module found ok" << endl;
     // get dictionary of available items in the module
     m_PyDict = PyModule_GetDict(m_PyModule);
 
@@ -52,23 +62,17 @@ int main(int argc, char** argv) {
     // execute the function    
     if (m_PyFooBar != NULL)
     {
-      cout << "Function foo_bar found ok" << endl;
+      //cout << "Function found ok" << endl;
 
-      // CREATE A cv:MAT FOR TEST -------------------------------------------
-      // take a cv::Mat object from somewhere (we'll just create one)
-      cv::Mat img = cv::Mat::zeros(480, 640, CV_8U);
-      
+      // Convertir image en format lisible par PyObject
       // total number of elements (here it's a grayscale 640x480)
-      int nElem = 640 * 480;
-      
+      int nElem = img.size[0] * img.size[1];
       // create an array of apropriate datatype
       uchar* m = new uchar[nElem];
-      
       // copy the data from the cv::Mat object into the array
       std::memcpy(m, img.data, nElem * sizeof(uchar));
-      
       // the dimensions of the matrix
-      npy_intp mdim[] = { 480, 640 };
+      npy_intp mdim[] = { img.size[0], img.size[1] };
       
       // convert the cv::Mat to numpy.array
       PyObject* mat = PyArray_SimpleNewFromData(2, mdim, NPY_UINT8, (void*) m);
@@ -76,9 +80,6 @@ int main(int argc, char** argv) {
       // create a Python-tuple of arguments for the function call
       // "()" means "tuple". "O" means "object"
       PyObject* args = Py_BuildValue("(O)", mat);
-      // if we want several arguments, we can write ("i" means "integer"):
-      // PyObject* args = Py_BuildValue("(OOi)", mat, mat, 123);
-      // see detailed explanation here: https://docs.python.org/2.0/ext/buildValue.html 
       
       // execute the function
       PyObject* obj = NULL;
@@ -87,7 +88,6 @@ int main(int argc, char** argv) {
       // Verification 
       if (obj==NULL) 
         return NULL;
-    
       
       // Transformation en PyArray
       int typenum = NPY_DOUBLE;
@@ -106,12 +106,13 @@ int main(int argc, char** argv) {
 
       // is 2D-array (gives segmentation fault otherwise)
       if (num_dims == 2 ){
+          //cout << "Dimensions ok" << endl;
           double **result;
           if (PyArray_AsCArray((PyObject **) &arr,
                       (void **) &result, dims, num_dims, descr) < 0){
               PyErr_SetString(PyExc_TypeError, "error converting to c array");
               return NULL;}
-          printf("Elements of array: \n");
+          printf("Taille de l'image: \n");
           for (int i=0; i < *num_len; i++)
             printf("%.2f\n", *result[0,i]);
           
