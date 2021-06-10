@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
       return -1;
   }
   cv::Mat img;
-  img = cv::imread( argv[1], 1 );
+  img = cv::imread( argv[1], cv::IMREAD_GRAYSCALE );
   if ( !img.data )
   {
       printf("No image data \n");
@@ -66,16 +66,18 @@ int main(int argc, char** argv) {
 
       // Convertir image en format lisible par PyObject
       // total number of elements (here it's a grayscale 640x480)
-      int nElem = img.size[0] * img.size[1];
+      //int nElem = img.size[0] * img.size[1];
       // create an array of apropriate datatype
-      uchar* m = new uchar[nElem];
+      //uchar* m = new uchar[nElem];
       // copy the data from the cv::Mat object into the array
-      std::memcpy(m, img.data, nElem * sizeof(uchar));
+      // std::memcpy(m, img.data, nElem * sizeof(uchar));
       // the dimensions of the matrix
       npy_intp mdim[] = { img.size[0], img.size[1] };
+      npy_intp ndim = 2;
+      void *data = img.data;
       
       // convert the cv::Mat to numpy.array
-      PyObject* mat = PyArray_SimpleNewFromData(2, mdim, NPY_UINT8, (void*) m);
+      PyObject* mat = PyArray_SimpleNewFromData(ndim, mdim, NPY_UINT8, data);
       
       // create a Python-tuple of arguments for the function call
       // "()" means "tuple". "O" means "object"
@@ -124,7 +126,6 @@ int main(int argc, char** argv) {
       Py_XDECREF(mat);
       Py_XDECREF(args);
     
-      delete[] m;
     }
   }
   else
