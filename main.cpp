@@ -29,8 +29,11 @@ int main(int argc, char** argv) {
       printf("usage: DisplayImage.out <Image_Path>\n");
       return -1;
   }
+  // Initialiser une cv::mat pour l'image
   cv::Mat img;
-  img = cv::imread( argv[1], cv::IMREAD_GRAYSCALE );
+  // Lire l'image as is
+  img = cv::imread( argv[1]);
+  
   if ( !img.data )
   {
       printf("No image data \n");
@@ -62,22 +65,22 @@ int main(int argc, char** argv) {
     // execute the function    
     if (m_PyFooBar != NULL)
     {
-      //cout << "Function found ok" << endl;
 
-      // Convertir image en format lisible par PyObject
-      // total number of elements (here it's a grayscale 640x480)
-      //int nElem = img.size[0] * img.size[1];
-      // create an array of apropriate datatype
-      //uchar* m = new uchar[nElem];
-      // copy the data from the cv::Mat object into the array
-      // std::memcpy(m, img.data, nElem * sizeof(uchar));
-      // the dimensions of the matrix
-      npy_intp mdim[] = { img.size[0], img.size[1] };
-      npy_intp ndim = 2;
-      void *data = img.data;
+      // ETAPE 1 : Convertir image en format lisible par Python
+      npy_intp ndim = img.dims;
+      npy_intp nchannels = img.channels();
+     
+      npy_intp *msize{ new npy_intp[ndim]{} }; //dynamic array
+      msize[0] = img.size[0];
+      msize[1] = img.size[1];
+      if (nchannels > 2){
+        msize[2] = nchannels;
+      }
       
-      // convert the cv::Mat to numpy.array
-      PyObject* mat = PyArray_SimpleNewFromData(ndim, mdim, NPY_UINT8, data);
+
+      void *data = img.data;
+      // on crée un numpy array avec le data du cv::mat
+      PyObject* mat = PyArray_SimpleNewFromData(nchannels, msize, NPY_UINT8, data);
       
       // create a Python-tuple of arguments for the function call
       // "()" means "tuple". "O" means "object"
