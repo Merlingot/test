@@ -9,8 +9,8 @@ def foo_bar(img=None):
         # Faire quelque chose avec l'image ici ...
         
         # Je retourne un array à la partie c++
-        imageSize = np.array([[img.shape[0]],[img.shape[1]]], dtype=np.double ) 
-        
+        imageSize = np.array(img.shape, dtype=np.double) 
+        imageSize = imageSize.reshape(( len(img.shape),1 ))
         return imageSize
     else:
         # Pas d'image reçue

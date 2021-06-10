@@ -76,12 +76,12 @@ int main(int argc, char** argv) {
       if (nchannels > 2){
         msize[2] = nchannels;
       }
+      void *data = img.data; // Pointeur données de l'image
       
-
-      void *data = img.data;
       // on crée un numpy array avec le data du cv::mat
       PyObject* mat = PyArray_SimpleNewFromData(nchannels, msize, NPY_UINT8, data);
       
+      // ÉTAPE 2 : on call la fonction Python
       // create a Python-tuple of arguments for the function call
       // "()" means "tuple". "O" means "object"
       PyObject* args = Py_BuildValue("(O)", mat);
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
       if (obj==NULL) 
         return NULL;
       
-      // Transformation en PyArray
+      // Étape 3 : Transformation du retour de Python en PyArray C-Contiguous
       int typenum = NPY_DOUBLE;
       PyObject *arr =  PyArray_FROM_OTF( obj, typenum, NPY_ARRAY_INOUT_ARRAY);
 
@@ -123,6 +123,9 @@ int main(int argc, char** argv) {
           
           // free C-like array
           PyArray_Free((PyObject *) arr, (void *) result);
+      }
+      else {
+        cout << "send 2d array" << endl;
       }
         
       // decrement the object references
